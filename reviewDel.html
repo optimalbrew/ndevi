@@ -1,0 +1,111 @@
+{{/* Insurer view of RFQ Saved to db but not sent.   */}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ndevi</title>
+   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+<div class="container-fluid">
+<a href="http://www.ndevi.com/" style="text-decoration:none;"><h2>ndevi</h2></a>
+	  		
+	<div class="col-xs-12 col-md-12">
+    
+<!-- Content start -->
+
+<p>User {{.InsEmpID}} logged in. <a href="/signout">Logout</a>
+<a class = "btn btn-primary" href="/insdboard"  role="button">Back to Dashboard</a> </p>
+
+<h4>RFQ marked for closing</h4> 
+<p>This request and all associated files will be permanently deleted a week from the time it was 
+marked for closing.</p>
+<p>Click <a class = "btn btn-warning" href="/recoverrfq"  role="button">Recover</a> to make it
+active again. If this was previously shared with reinsurers, it has be marked as active again
+on their dashboards. Except recovery, no changes are allowed at this point.</p>
+
+<p> RFQ marked for closing by {{.InsEmpID}} on {{.RFQStrTime}}. Reference number (RFQ ID): {{.RFQId}}</p> 
+
+<p> {{if .RespRcvdFrom}}
+		This closed RFQ had <b> received {{.NumRespRcvd}} responses </b>. Quotes received from: 
+		{{range .RespRcvdFrom}}
+	 	<{{.}}> 	
+		{{end}}
+	{{end}}
+</p>
+
+<table class="table">
+  	<!--	<tr>
+    		<td><b>Field</b></td>	<td><b>Input</b></td>  
+  		</tr> 
+
+<tr><td><b>Insurer:</b></td><td> {{.Insurer}}</td></tr>
+<tr><td><b>Created by:</b></td><td> {{.InsEmpID}}</td></tr>
+-->
+
+<tr><td><b>Insurance class:</b></td><td> {{if .InsCat}}{{.InsCat}}{{else}} Not entered{{end}}</td>	</tr>
+	<tr><td><b>Reinsurance type:</b></td><td> {{if .InsType}}{{.InsType}}{{else}} Not entered{{end}}</td>	</tr>
+	{{if eq .Treaty 0}}
+	<tr><td><b>Client:</b></td><td> {{if .ClientName}}{{.ClientName}} {{else}} Not entered{{end}}</td>	</tr>
+	<tr><td><b>New or existing customer:</b></td><td>{{if .NewCust}} {{.NewCust}} {{else}} Not mentioned{{end}}</td>	</tr>
+	{{end}}
+	
+	<tr><td><b>Insured value:</b></td><td>{{if .InsVal}} {{.InsVal}} {{else}} No values entered{{end}}</td></tr>
+	<tr><td><b>Insured deductible:</b></td><td>{{if .InsDed}} {{.InsDed}} {{else}} No values entered{{end}}</td></tr>
+	<tr><td><b>Period:</b></td><td>{{if .Period}} {{.Period}} {{else}} No values entered{{end}}</td></tr>
+	
+	{{if eq .Treaty 1}}
+	<tr><td><b>Estimated Premium:</b></td><td>{{if .EstPrem}} {{.EstPrem}} {{else}} No values entered{{end}}</td></tr>
+	{{end}}
+	<tr><td><b>Brokerage:</b></td><td>{{if .Brokerage}} {{.Brokerage}} {{else}} No brokers involved {{end}}</td></tr>
+	<tr><td><b>Bid Reporting Method:</b></td><td>
+	{{if eq .Method 0}} The <b>second lowest</b> quoted premium and the <i>interval length</i> 
+	of bids (difference between highest and lowest) will be reported to the insurer and to <b>all reinsurers</b>. 
+	Identity of lowest bidder will be revealed to the insurer, but the lowest quoted premium will <b>not be reported</b>. 
+	
+	{{else}}All quoted premiums will be reported to insurer. Bid information is not conveyed to reinsurers. 
+	{{end}}</td></tr>
+
+<tr>
+<td><b>Files uploaded:</b></td> <td><ul>
+{{/*Conditional on files */}}
+{{range .FileNames}}  <li> <a href="/serve/{{.}}">{{.}}</a> </li> {{else}} No files uploaded. {{end}}
+ </ul></td>
+</tr>
+
+<tr>
+<td><b>RFQ invitation list:</b></td><td> 
+Current List: 
+{{range .ReInsList}}  
+ <b>{{.}}</b>
+{{else}} No recipient emails listed. {{end}}
+</td></tr>
+		 
+  	</table>
+
+<p><b>Remarks: </b></td><td>{{if .InsRemarks}} {{.InsRemarks}} {{else}} No remarks entered{{end}}</p>
+
+
+<p><a class = "btn btn-primary" href="/insdboard"  role="button">Back to Dashboard</a> 
+</p>
+
+
+<!-- Content ends -->
+
+	
+	 <br></br>	
+	<footer id="footer">	
+    <p>ndevi solutions 2015. Contact <a href ="mailto:support@ndevi.com">support@ndevi.com</a> </p>    
+    </footer>	
+	</div>
+</div>
+</body>
+</html>	
+
+	
+	

@@ -1,0 +1,228 @@
+{{/*The base template for reinsurer's view of an RFQ, feed it a struct of type RInsList*/}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ndevi</title>
+   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+<div class="container-fluid">
+<a href="http://www.ndevi.com/" style="text-decoration:none;"><h2>ndevi</h2></a>
+	  		
+	<div class="col-xs-12 col-md-12">
+{{/* start base with fluid and col xs 12 col md 12 and */}}
+<p>User <b>{{.RIUsername}}</b> logged in. <a href="/signout">Logout</a> 
+ <a class = "btn btn-primary" href="/rinsdboard"  role="button">View Dashboard</a> </p>
+
+
+
+
+
+{{/* now start the smaller div elements */}}
+
+
+
+<!--Left column-->
+
+<div class="col-xs-12 col-md-8">
+	{{if eq .Treaty 1}}<h4>Summary: Treaty Excess of Loss RFQ</h4> 
+	{{else}}<h4>Summary: Facultative RFQ</h4> 
+	{{end}}
+	<p> Reference number: {{.RFQId}}. Last revised: {{.RFQStrTime}}</p>
+	
+	{{if .RespDate}}
+	<p>Your <b>latest response</b> was on {{.RespDate}}. If it shows up as not responded
+	on dashboard, then there is a new message or update from insurer.</p>
+	{{else}}
+	<p>You have not sent your response to this RFQ yet.</p>	
+	{{end}}
+
+	<table class="table">
+	
+	<tr><td><b>Insurer:</b></td><td> {{.Insurer}}</td></tr>
+	<tr><td><b>Created by:</b></td><td> {{.InsEmpID}}</td></tr>
+
+	<tr><td><b>Insurance class:</b></td><td> {{.InsCat}}</td></tr>
+	<tr><td><b>Reinsurance type:</b></td><td> {{.InsType}}</td></tr>
+
+	{{if eq .Treaty 0}}
+	<tr><td><b>Client:</b></td><td> {{.ClientName}} </td></tr>
+	<tr><td><b>New or existing customer:</b></td><td> {{.NewCust}}</td></tr>
+	{{end}}
+
+	<tr><td><b>Insured value:</b></td><td> {{.InsVal}} </td></tr>
+	<tr><td><b>Insured's deductible:</b></td><td> {{.InsDed}}</td></tr>
+	
+	{{if eq .Treaty 1}}
+	<tr><td><b>Estimated Premium:</b></td><td>{{if .EstPrem}} {{.EstPrem}} {{else}} No values entered{{end}}</td></tr>
+	{{end}}
+	
+	
+	<tr><td><b>Brokerage:</b></td><td>{{if .Brokerage}} {{.Brokerage}} {{else}} No brokers involved {{end}}</td></tr>
+	
+	<tr><td><b>Bid Reporting Method:</b></td><td>
+	{{if eq .Method 1}} Insurer has selected the second-lowest reporting method.
+	Identity of lowest bidder will be revealed to the insurer, but the lowest quoted premium will <b>not be reported</b>.
+	Insurer may choose to share the median offer received with reinsurers. This can happen one time at most.
+	Even if offers get revised, the lowest current offer will not be revealed to insurer. This is 
+	intended to allow reinsurers to be a bit more aggressive in their offers.
+	{{else}}All quoted premiums will be reported to insurer. 
+	Insurer may choose to share the median offer received with reinsurers. This can happen one time at most.
+	{{end}}</td></tr>
+	
+	
+	<tr>
+	<td><b>Attachments:</b></td> <td>uploaded by {{.InsEmpID}}<ul>
+	{{/*Conditional on files */}}
+	{{range .FileNames}}  <li> <a href="/serve/{{.}}">{{.}}</a> </li> {{else}} No attachments. {{end}}
+	</ul></td>
+	</tr>
+  	</table>
+<p><b>Insurer's Remarks:</b></td><td>{{if .InsRemarks}} {{.InsRemarks}} {{else}} No remarks entered{{end}}</p>
+
+
+<h4>Quote Summary</h4>
+<table class="table">
+	
+	<tr><td><b>Maximum cover offerred:</b></td>
+		<td> {{if .Limit }}<b>{{index .Limit 0 }}</b>{{else}} None entered {{end}}
+    	{{if .Limit}} Revision history: [{{range .Limit}} "{{.}}" {{end}}]{{end}}</td></tr>
+	
+	<tr><td><b>Premium quoted:</b></td>
+		<td>{{if .Premium}}<b>{{index .Premium 0 }}</b>{{else}} None entered{{end}}
+    {{if .Premium}} Revision history: [{{range .Premium}} "{{.}}" {{end}}]{{end}}  </td></tr>
+
+	<tr><td><b>Commission quoted:</b></td>
+	<td>{{if .Commission}}<b>{{index .Commission 0 }}</b>{{else}} None entered{{end}}
+    {{if .Commission}} Revision history: [{{range .Commission}} "{{.}}" {{end}}]{{end}}	</td></tr>
+
+	<tr><td><b>Notes for insurer:</b></td>
+	<td> See "conversation" below.</td></tr>
+
+
+	<tr><td><b>Your private notes:</b></td>
+	<td>{{if .Private}} <i>{{.Private}}</i>{{end}}</td></tr>
+
+
+	<tr>
+	<td><b>Attachments:</b></td> 
+	<td>uploaded by you<ul>
+	{{$rins := .RIUsername}}
+	{{range .RinsFileNames}}  <li> <a href="/serverins/{{$rins}}/{{.}}">{{.}}</a> 
+	Click <a href="/deleteFileRins/{{.}}"> [Delete]</a> to remove.</li> {{else}} No attachments. {{end}}
+	<li><a href="/handleroot">Add files</a> </li>
+	</ul></td>
+	</tr>
+    
+  	</table>
+
+{{if eq .RespStatus 1}}
+<p>When ready to submit your response to the RFQ click 
+<a class = "btn btn-success" href="/rinsrespmsg"  role="button">Share response with insurer</a></p>
+{{end}}
+
+{{/* Just for kicks: {{range $i, $f := .FileNames}} Filename: {{$f}} FileSize : {{len $f}}{{end}} 
+also works with if. Declare variables with $prefix sign. For actual use, would need to learn
+about function maps. 
+
+{{range $i,$file := .FileNames}}
+File Name: {{$file}}  {{$key := index $.FileBlobKeys $i}} File Key: {{$key}}
+{{end}}
+
+*/}}
+
+
+
+<h4>Conversation</h4>
+{{/*Should only pull the most recent exchanges, max 10. Show option of viewing the entire thing
+if required. */}}
+<h5>Most recent first</h5>
+
+
+{{range $i,$auth := .ConvAuth}}
+<p><b>{{$auth}}:</b>  {{$msg := index $.Conversation $i}} {{$msg}}</p>
+{{end}}
+
+</div>
+
+
+
+<!-- right column-->
+<div class="col-xs-12 col-md-4">
+	<h4>Respond or revise previous response</h4>
+	<p>Enter new information or revisions. Leave other fields blank. </p>
+	<form action="/rinsinit" method="post">
+	<div class="form-group">
+    <label for="MaxCover">Maximum cover offerred</label>  (e.g. INR)   
+    <p> Latest: {{if .Limit }}<b>{{index .Limit 0 }}</b>{{else}} None entered {{end}}
+    {{if .Limit}} Revision history: [{{range .Limit}} "{{.}}" {{end}}]{{end}}</p>
+    <input type="text" name = "MaxCover" class="form-control" id="MaxCover" placeholder="">
+  	</div>
+  	
+  	<div class="form-group">
+    <label for="Prem">Premium quoted</label> (as a percent of cover length)
+    <p> Latest: {{if .Premium}}<b>{{index .Premium 0 }}</b>{{else}} None entered{{end}}
+    {{if .Premium}} Revision history: [{{range .Premium}} "{{.}}" {{end}}]{{end}}</p> 
+    <div class="input-group"> 
+    <input type="number" name="Prem" class="form-control" id="Prem" min="0" step="0.001" max="15" placeholder="e.g. 0.456" >
+    <div class="input-group-addon">%</div>
+  	</div>
+  	</div> 	
+	
+	{{if eq .Treaty 0}}	{{/* No commission for treaty XL */}}
+		<div class="form-group">
+		<label for="Comm">Commission</label>  (if applicable, as a percent of cover length)
+		<p> Latest: {{if .Commission}}<b>{{index .Commission 0 }}</b>{{else}} None entered{{end}}
+		{{if .Commission}} Revision history: [{{range .Commission}} "{{.}}" {{end}}]{{end}}</p>   
+		<div class="input-group"> 
+		<input type="number" name="Comm" class="form-control" id="Comm" min="0" step="0.01" max="30" placeholder="e.g. 10" >
+		<div class="input-group-addon">%</div>
+		</div>
+		</div> 		
+	{{end}}
+		
+	<div class="form-group">
+    <label for="remarks">Notes for {{.InsEmpID}}</label>
+    <p>These show up under "Conversation" </p> 	
+ 	<textarea class="form-control" name = "remarks" rows="8" placeholder = "Will be shared with {{.InsEmpID}}"></textarea>
+ 	</div>
+	
+	<div class="form-group">
+    <label for="private">Notes to Self (private)</label>
+    <p>This is for your <i>own future reference</i> and will <b>not be shared</b> with anyone.</p>
+    	
+ 	<textarea class="form-control" name = "private" rows="8" 
+ 		placeholder = "Private: Will not be shared with anyone. Anything you enter will overwrite existing. Please copy and paste previous to retain.">
+ 		{{.Private}}</textarea>
+ 	</div>
+	<button type="submit" class="btn btn-info">Save</button>		
+
+	</form>
+	{{if .RespDate}}<p>Inform insurer that there is a change or message. 
+	<a class = "btn btn-success" href="/rinsrespmsg"  role="button">Inform insurer</a></p></p> 
+	{{end}}	
+	
+</div> {{/* End of right column */}}
+
+
+{{/* end base with fluid and col xs 12 col md 12 and  the footer*/}}
+ <br></br>	
+	
+	</div> {{/* closes the outermost col xs 12 col md 12*/}}
+	<footer id="footer">	
+    <p>ndevi solutions 2015. Contact <a href ="mailto:support@ndevi.com">support@ndevi.com</a> </p>    
+    </footer>	
+</div> {{/*Closes the outer fluid space*/}}
+</body>
+</html>
+
+
+
+
+
+	

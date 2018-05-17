@@ -1,0 +1,300 @@
+{{/*Template to display RFQ for insurer*/}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ndevi</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+<div class="container-fluid">
+<a href="http://www.ndevi.com/" style="text-decoration:none;"><h2>ndevi</h2></a>
+	<div class="col-xs-12 col-md-12">
+{{/* start base with fluid and col xs 12 col md 12 and */}}
+<p>User <b>{{.InsEmpID}}</b> logged in. <a href="/signout">Logout</a>  
+<a class = "btn btn-primary" href="/insdboard"  role="button">View Dashboard</a> </p>
+
+
+
+
+{{/* now start the smaller div elements */}}
+
+<!--Left column-->
+<div class="col-xs-12 col-md-8">
+	{{if eq .Treaty 1}}<h4>Summary: Treaty Excess of Loss RFQ</h4> 
+	{{else}}<h4>Summary: Facultative RFQ</h4> 
+	{{end}}
+	
+	{{if .RFQId}}<p> RFQ created or modified by {{.InsEmpID}} on {{.RFQStrTime}}. Reference number (RFQ ID): {{.RFQId}}</p> 
+		{{if eq .Status 1}}<p><i>This request has <b>not been</b> shared with reinsurers yet</i></p>
+		{{else}}<p><i>This request <b>has been emailed</b> to reinsurers and is visible on their dashboards. If you make any changes, 
+		you may have to include clarifying remarks. 
+		Previous values remain visible to reinsurers, with time of revision</i></p>
+		{{end}}
+	{{else}}<p>You have started a new quote request. Please fill in some basic information on the right, then 
+	upload relevant files and reinsurer contact information below.</p>
+	{{end}}
+	<table class="table">
+	 
+	<tr><td><b>Insurance class:</b></td><td> {{if .InsCat}}{{.InsCat}}{{else}} Not entered{{end}}</td>	</tr>
+	<tr><td><b>Reinsurance type:</b></td><td> {{if .InsType}}{{.InsType}}{{else}} Not entered{{end}}</td>	</tr>
+	{{if eq .Treaty 0}}
+	<tr><td><b>Client:</b></td><td> {{if .ClientName}}{{.ClientName}} {{else}} Not entered{{end}}</td>	</tr>
+	<tr><td><b>New or existing customer:</b></td><td>{{if .NewCust}} {{.NewCust}} {{else}} Not mentioned{{end}}</td>	</tr>
+	{{end}}
+	
+	<tr><td><b>Insured value:</b></td><td>{{if .InsVal}} {{.InsVal}} {{else}} No values entered{{end}}</td></tr>
+	<tr><td><b>Insured deductible:</b></td><td>{{if .InsDed}} {{.InsDed}} {{else}} No values entered{{end}}</td></tr>
+	<tr><td><b>Period:</b></td><td>{{if .Period}} {{.Period}} {{else}} No values entered{{end}}</td></tr>
+	
+	{{if eq .Treaty 1}}
+	<tr><td><b>Estimated Premium:</b></td><td>{{if .EstPrem}} {{.EstPrem}} {{else}} No values entered{{end}}</td></tr>
+	{{end}}
+	<tr><td><b>Brokerage:</b></td><td>{{if .Brokerage}} {{.Brokerage}} {{else}} No brokers involved {{end}}</td></tr>
+	<tr><td><b>Bid Reporting Method:</b></td><td>
+	{{if eq .Method 1}} Insurer has selected the second-lowest reporting method.
+	Identity of lowest bidder will be revealed to the insurer, but the lowest quoted premium will <b>not be reported</b>. 
+	Insurer may choose to share the median offer received with reinsurers. This can happen one time at most.
+	Even if offers get revised, the lowest current offer will not be revealed to insurer. This is 
+	intended to allow reinsurers to be a bit more aggressive in their offers.
+	{{else}}All quoted premiums will be reported to insurer. 
+	Insurer may choose to share the median offer received with reinsurers. This can happen one time at most.
+	{{end}}</td></tr>
+	
+	<tr>
+	<td><b>Files uploaded:</b></td> <td><ul>
+	{{/*Conditional on files */}}
+	{{range .FileNames}}  <li> <a href="/serve/{{.}}">{{.}}</a> Click <a href="/deleteFileIns/{{.}}"> [Delete]</a> to remove.</li> 
+	{{else}} No files uploaded. 
+	{{end}}
+	
+	<li><a href="/handleroot">Add files</a> </li> </ul>
+	
+	
+	Changes made above will show up immediately on reinsurers dashboards. Emails will <b>not be sent</b> (see policy below).
+	</td>
+	</tr>
+
+	<tr>
+	<td><b>RFQ invitation list:</b></td><td> 
+	<form action="/addrins" method = "post">
+	Select appropriate checkbox to <b>remove a reinsurer</b> from the current list. 
+	{{if eq .Status 1}}<!--nothing-->{{else}}
+		The selected users will not be able to view this request
+		on their dashboards any more. Any information or files they have added will be deleted.
+	{{end}}
+	</p> 
+	<p>Current list:
+	{{range .ReInsList}}  
+	<label class="checkbox-inline">
+	  <input type="checkbox" name= "RInsDel[]" id="inlineCheckbox1" value="{{.}}"> <b>{{.}}</b>
+	</label>
+	{{else}} No recipient emails listed. {{end}}
+	<p>To add new reinsurers enter email IDs separated by commas.</p>
+	<div class= "form-group">
+	<input type="text" name = "RIemails" class="form-control" id="list" placeholder="xyz@abcRE.com, abc@xyzRe.com,">
+	</div> 	
+	<button type="submit" class="btn btn-primary">Update List</button> 
+	{{if eq .Status 1}}<!--nothing-->{{else}} Automatic emails will be
+	sent to the newly added reinsurers. It is better to update the list after <i>all other</i> modifications
+	have been completed.{{end}}
+	</form>
+	</td></tr>
+	
+	<tr><td><b>Your private notes:</b></td>
+	<td>{{if .InsPrivate}} <i>{{.InsPrivate}}</i>{{end}}</td></tr>
+		 
+		</table>
+	<p><b>Remarks: </b></td><td>{{if .InsRemarks}} {{.InsRemarks}} {{else}} No remarks entered{{end}}</p>
+
+	<h4>Further actions</h4>
+	{{if .RFQId}}
+	
+		{{if eq .Status 1}}
+		<p><a class = "btn btn-success" href="/sharerfq"  role="button">Share with reinsurers</a> 
+		to make the RFQ visible on reinsurers' dashboards. 
+		This also emails the RFQ with above summary and files attached to each reinsurer listed in the RFQ (bcc:). 
+		In these emails, your email ID appears in "To:" and "Reply To:" fields.</p>
+		{{else}}
+		<p><b> EMail policy on modifications:</b> We try to minimize the number of automatic emails people receive from us.  
+		Modifications made to RFQs are immediately visible to reinsurers on their dashboards, but emails are not sent.</p> 
+
+		<p>If you <b>specifically want</b> all listed reinsurers to be sent an email about the change, 
+		then after making all modifications and file uploads, enter some comments about the changes and  
+		click <a class = "btn btn-info" href="/modalert"  role="button">Email Modification Alert</a>. This 
+		email will include the above summary, your latest remarks, and all currently uploaded files will be attached, .</p>
+		{{end}}
+
+		<p><a class = "btn btn-warning" href="/deleterfq"  role="button">Close RFQ</a> <i>marks this record</i> for removal.
+		Closing RFQs that are no longer required can help speed up database responses times. If you choose not to reactivate it, then the record will be <b>permanently deleted after 1 week</b>. 
+	
+		{{if eq .Status 1}}<!--nothing-->{{else}}Reinsurers will be informed about the closing of the RFQ and they can view it until the record is 
+		deleted from our systems. Any files uploaded by reinsurers will also be deleted at that point.{{end}}</p>
+	
+	{{end}} {{/*End if .RFQId */}}
+
+	<p><a class = "btn btn-primary" href="/insdboard"  role="button">Back to Dashboard</a></p>
+</div> 
+
+<!--Right column-->
+<div class="col-xs-12 col-md-4"> 
+{{if .RFQId}}
+<h4>Make Modifications</h4>
+<p>Fields that are left blank will retain previously entered information.</p>
+<form action="/reviserfq" method = "post">
+{{else}} 
+<h4>Enter Information for New RFQ</h4>
+<p>After saving information, you may upload files right away, or later.</p>
+	{{if eq .Treaty 1}}<form action="/request/Treaty" method = "post"> 
+	{{else}}
+	<form action="/request/Fac" method = "post"> 
+	{{end}}
+{{end}}
+
+	{{if eq .Treaty 0}}
+ 	<div class="form-group">
+    <label for="client">Client Name: </label> <i>{{.ClientName}}</i>   
+    <input type="text" name = "client" class="form-control" id="client" placeholder="">
+  	</div>
+  	{{end}}
+  	
+  	<div class="form-group">
+    <label for="cat">Insurance Class: </label>  <i>{{.InsCat}}  </i>
+    <input type="text" name = "cat" class="form-control" id="cat" placeholder="e.g. Group life, Auto ">
+  	</div>
+	
+	{{if eq .Treaty 0}}
+	<div class="form-group">
+			    <label> Current or new customer: </label> <i>{{.NewCust}}</i>
+  				<div class="input-group" >
+  				<label class="radio-inline"> 
+  				<input type="radio" name="RadioProd" id="inlineRadio1" value="Renewal"> Renewal
+				</label>
+				<label class="radio-inline"> 
+  				<input type="radio" name="RadioProd" id="inlineRadio2" value="New Quote"> New client
+				</label>
+  				</div>
+  	</div>	
+ 	{{end}}
+ 	
+ 	<div class="form-group">
+    <label for="RIType">Type of reinsurance: </label>    <i>{{.InsType}}</i>
+    <input type="text" name = "RItype" class="form-control" id="RItype" placeholder="e.g. Excess of loss">
+  	</div>
+  	
+  	<div class="form-group">
+    <label for="IV">Sum Insured: </label>  <i>{{.InsVal}}</i>  
+    <input type="text" name = "sumIns" class="form-control" id="sumIns" placeholder="e.g. USD 2,000,000">
+  	</div>
+  	
+  	<div class="form-group">
+    <label for="reten">Retention: </label>  <i>{{.InsDed}}</i>  
+    <input type="text" name = "reten" class="form-control" id="reten" placeholder="e.g. 20%, or USD 500,000">
+  	</div> 
+  	
+  	<div class="form-group">
+    <label for="period">Period: </label>  <i>{{.Period}}</i>  
+    <input type="text" name = "period" class="form-control" id="period" placeholder="e.g. Jan 1, 2016 to Dec 31, 2016.">
+  	</div>
+  	
+  	{{if eq .Treaty 1}}
+  	<div class="form-group">
+    <label for="estprem">Estimated Premium: </label>  <i>{{.EstPrem}}</i>  
+    <input type="text" name = "estprem" class="form-control" id="reten" placeholder="e.g. USD 5,000,,000">
+  	</div>
+  	{{end}}
+  	
+  	{{if eq .Status 1}}
+  	<div class="form-group">
+			    <label> Bid Reporting Method: </label> <i>{{if eq .Method 1}} Second Price{{else}} All bids{{end}}</i>
+  				<div class="input-group" >
+  				<label class="radio-inline"> 
+  				<input type="radio" name="method" id="inlineRadio1" value="1"> Second Price
+				</label>
+				<label class="radio-inline"> 
+  				<input type="radio" name="method" id="inlineRadio2" value="0"> All Bids (Default)
+				</label>
+  				</div>
+  	<p> This <b>cannot be changed</b> after an RFQ is shared with reinsurers. Second price will only
+  	display the second lowest premium offer received. All bids will display every offer.</p>
+  	</div>
+  	{{end}}
+  	
+  	<div class="form-group">
+    <label for="brokerage">Brokerage: </label>  <i>{{.Brokerage}}</i>  
+    <input type="text" name = "brokerage" class="form-control" id="brokerage" placeholder="e.g. 2% (reinsurance brokers only)">
+  	</div> 	
+	
+	{{if .RFQId}}<!--display only for new request-->{{else}}
+	<p>Enter reinsurers' emails separated by commas. You can enter this later. Please
+	be careful, we cannot verify the correctness of email Ids you enter.</p>
+	<div class="form-group">
+    <label for="RIcs">Reinsurers Emails</label>    
+    <input type="text" name = "RIemails" class="form-control" id="list" placeholder="xyz@abcRE.com, abc@xyzRe.com," >
+	</div>
+	{{end}}
+	
+	<div class="form-group">
+    <label for="remarks">Message for Reinsurers.</label> 
+    {{if .InsRemarks}} 
+    <p><i>Current message listed in the summary</i>.
+    New remarks will <b>completely replace</b> the existing ones.</p>
+    {{else}}<p>Enter brief message as you might over email.</p>
+    {{end}} 	
+ 	
+ 	{{if .RFQId}}
+ 	<textarea class="form-control" name = "revised.remarks" rows="10"> Current: {{.InsRemarks}}</textarea>
+ 	{{else}}
+ 	<textarea class="form-control" name = "revised.remarks" rows="10" 
+ 	placeholder="Message will be converted to a single, plain-text paragraph. Please keep it brief." 
+ 		maxlength = "1450" ></textarea>
+ 	</div>
+	{{end}}
+	
+	<div class="form-group">
+    <label for="insprivate">Notes to Self (private)</label>
+    <p>This is for your <i>own future reference</i> and <b>will not be shared</b> with anyone. 
+    </p> 
+    
+    {{if .RFQId}} 	
+ 	<textarea class="form-control" name = "insprivate" rows="8" 
+ 		placeholder = "Private: Will not be shared with anyone. Anything you enter will overwrite existing. Please copy and paste previous to retain."></textarea>
+	{{else}}
+	<textarea class="form-control" name = "insprivate" rows="8" 
+ 	placeholder = "Private: Will not be shared with anyone."> Current: {{.InsPrivate}}
+    </textarea>
+ 	</div>
+	{{end}}
+	
+	<br></br>
+ 	{{if .RFQId}}<button type="submit" class="btn btn-info">Save Changes and Review</button>
+ 	{{else}}<button type="submit" class="btn btn-success">Save New RFQ</button>
+ 	{{end}}
+
+	{{/*"Twice" because of the template, we are calling < form > "twice"*/}}
+ 	{{if .RFQId}} </form>
+	{{else}} </form>  
+	{{end}}
+	
+</div>
+
+<!-- Now the stuff that follows the columns. Rins responses and conversations. Make
+them about 4 columns each. So each row will accomodate 3 RI responses. The <div>s
+obviously can be made automatic depending on the number of ri responses, which is
+captured by  -->
+
+{{/* end base with fluid and col xs 12 col md 12 and  the footer*/}}
+ <br></br>	
+	
+	</div> {{/* closes the outermost col xs 12 col md 12*/}}
+	<footer id="footer">	
+    <p>ndevi solutions 2015. Contact <a href ="mailto:support@ndevi.com">support@ndevi.com</a> </p>    
+    </footer>	
+</div> {{/*Closes the outer fluid space*/}}
+</body>
+</html>
+

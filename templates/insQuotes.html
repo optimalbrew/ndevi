@@ -1,0 +1,120 @@
+{{/* This will be called with a suitably modified struct called Resp.
+http://play.golang.org/p/JFkGmjq8mY */}}
+ 
+
+<h4> Quotes</h4>
+{{if .Median}}
+<p>The <b>median premium</b> is: {{.Median}}</p>
+{{else}}
+<p>Median not calculated when number of bids is less than 3.</p>
+{{end}}
+
+<table class="table">
+<tr><td> </td> {{range .Rins}}<td><b>{{.}}</b></td>{{end}} </tr>
+
+<tr><td><b>{{index .RowNames 0}}</b></td>
+
+{{range $i, $a := .Rins}}
+{{$lim := index $.Limit $i}}
+   <td>
+   		{{if $lim}}
+   			<b>{{index $lim 0}}</b> Full history:
+   			[{{range $lim}} "{{.}}" {{end}}]
+   		{{else}} No values entered
+   		{{end}}
+   </td>
+{{end}}
+
+</tr>
+
+<tr>
+<td><b>{{index .RowNames 1}}</b></td>
+
+
+{{range $i, $a := .Rins}}
+{{$prem := index $.Premium $i}}
+   <td>
+   		{{if $prem}}
+   			<b>{{index $prem 0}}</b> Full history:
+   			[{{range $prem}} "{{.}}" {{end}}]  
+   		{{else}} No values entered
+   		{{end}}
+   </td>
+{{end}}
+</tr>
+
+<tr>
+<td><b>{{index .RowNames 2}}</b></td>
+
+
+{{range $i, $a := .Rins}}
+{{$comm := index $.Commission $i}}
+   <td>
+   		{{if $comm}}
+   			<b>{{index $comm 0}}</b> Full history:
+   			[{{range $comm}} "{{.}}" {{end}}]
+   		{{else}} No values entered
+   		{{end}}	
+   </td>		
+{{end}}
+
+</tr>
+
+<tr>
+<td><b>{{index .RowNames 3}}</b></td>
+
+{{range $i, $a := .Rins}}
+{{$files := index $.Files $i}}
+<td>   	
+  	<ul>
+	{{range $files}}  <li> <a href="/serverins/{{$a}}/{{.}}">{{.}}</a> 
+	</li> {{else}} No files uploaded. {{end}}
+	</ul>
+</td>  	 	
+{{end}}
+
+</tr>
+
+
+
+<tr>
+<td><b>{{index .RowNames 4}}</b></td>
+
+
+{{range $i, $a := .Rins}}
+{{$auth := index $.ConvAuth $i}}
+{{$msg := index $.Conversation $i}}
+   
+   	<td>{{range $j, $loop := index $.Conversation $i}} 
+   	<p><b>{{index $auth $j}}: </b> {{index $msg $j}}</p>
+   	{{end}}
+   
+    
+    <form action="/pm/{{$a}}" method = "post">
+    <div class="form-group">
+    <!--<label for="remarks">Personal message.</label> -->
+ 	<textarea class="form-control" name = "pm" rows="5" 
+ 	placeholder="Send personal message to {{$a}}" ></textarea>
+ 	</div>
+ 	
+ 	<button type="submit" class="btn btn-primary">Send personal message</button>
+	</form>    
+	</td>  		
+  	  
+{{end}}
+
+</tr>
+
+</table>
+
+
+<br></br>	
+	
+	
+	<footer id="footer">	
+    <p>ndevi solutions 2015. Contact <a href ="mailto:support@ndevi.com">support@ndevi.com</a> </p>    
+    </footer>	
+</div> {{/* closes the outermost col xs 12 col md 12*/}}
+</div> {{/*Closes the outer fluid space*/}}
+</body>
+</html>

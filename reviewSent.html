@@ -1,0 +1,120 @@
+{{/* Insurer view of RFQ already sent to reinsurers.   */}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ndevi</title>
+   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+<div class="container-fluid">
+<a href="http://www.ndevi.com/" style="text-decoration:none;"><h2>ndevi</h2></a>
+	  		
+	<div class="col-xs-12 col-md-10">
+    
+<!-- Content start -->
+
+<p>User {{.InsEmpID}} logged in. <a href="/signout">Logout</a></p>
+
+
+<a class = "btn btn-primary" href="/insdboard"  role="button">Back to Dashboard</a>  
+
+
+<h4>Summary</h4> 
+<p> RFQ created by {{.InsEmpID}} on {{.RFQStrTime}}. Reference number (RFQ ID): {{.RFQId}}</p> 
+<p><i>This request <b>has been shared with</b> reinsurers</i>.</p>
+
+<table class="table">
+  <!--		<tr>
+    		<td><b>Field</b></td>	<td><b>Input</b></td>  
+  		</tr> 
+
+<tr><td><b>Insurer:</b></td><td> {{.Insurer}}</td></tr>
+<tr><td><b>Created by:</b></td><td> {{.InsEmpID}}</td></tr>
+-->
+<tr><td><b>Insurance Category:</b></td><td> {{if .InsCat}}{{.InsCat}}{{else}} Not entered{{end}}</td>	</tr>
+<tr><td><b>Insurance Type:</b></td><td> {{if .InsType}}{{.InsType}}{{else}} Not entered{{end}}</td>	</tr>
+
+<tr><td><b>Client:</b></td><td> {{if .ClientName}}{{.ClientName}} {{else}} Not entered{{end}}</td>	</tr>
+<tr><td><b>New or existing customer:</b></td><td>{{if .NewCust}} {{.NewCust}} {{else}} Not mentioned{{end}}</td>	</tr>
+
+<tr><td><b>Insured Value (INR):</b></td><td>{{if .InsVal}} {{.InsVal}} {{else}} No values entered{{end}}</td></tr>
+<tr><td><b>Insured Deductible (INR):</b></td><td>{{if .InsDed}} {{.InsDed}} {{else}} No values entered{{end}}</td></tr>
+
+<tr>
+<td><b>Files uploaded:</b></td> <td><ul>
+{{/*Conditional on files */}}
+{{range .FileNames}}  <li> <a href="/serve/{{.}}">{{.}}</a> Click <a href="/deleteFileIns/{{.}}"> [Delete]</a> to remove.</li> {{else}} No files uploaded. {{end}}
+
+<li><a href="/handleroot">Add files</a> </li> </ul>
+Changes made above will show up immediately on reinsurers dashboards. Emails will <b>not be sent</b> (see policy below).
+</td>
+</tr>
+
+<tr>
+<td><b>RFQ invitation list:</b></td><td> 
+<form action="/addrins" method = "post">
+Select to <b>remove</b>. The selected users will not be able to view this request
+on their dashboards any more. Any work they may have done on this <b>will be lost</b>. 
+Current list:
+{{range .ReInsList}}  
+<label class="checkbox-inline">
+  <input type="checkbox" name= "RInsDel[]" id="inlineCheckbox1" value="{{.}}"> <b>{{.}}</b>
+</label>
+{{else}} No recipient emails listed. {{end}}
+<p>To add reinsurers enter email IDs separated by commas.</p>
+<div class= "form-group">
+<input type="text" name = "RIemails" class="form-control" id="list" placeholder="xyz@abcRE.com, abc@xyzRe.com,">
+</div> 	
+<button type="submit" class="btn btn-primary">Update List</button>  Automatic emails will be
+sent to the new additions.
+</form>
+</td></tr>
+		 
+  	</table>
+<p><b>Remarks: </b></td><td>{{if .InsRemarks}} {{.InsRemarks}} {{else}} No remarks entered{{end}}</p>
+
+<h4>Further actions</h4>
+
+<p>To revise this RFQ click <a class = "btn btn-warning" href="/modifyrfq"  role="button">Modify</a>.
+As this RFQ is <b>already shared with reinsurers</b>, 
+you may have to include clarifying remarks about the changes. Previous values <b>will remain visible</b> to reinsurers, with the date and time of the revision.</p>
+
+<p><b> EMail policy on modifications:</b> We try to minimize the number of automatic emails people receive from us. 
+Our default policy is to send automatic emails to reinsurers only for new RFQs. 
+Modifications made to RFQs are immediately visible to reinsurers on their dashboards, but emails are not sent
+automatically.</p> 
+
+<p>If you <b>specifically want</b> all listed reinsurers to be sent an email about the change, then after making all modifications and file uploads,
+enter some comments about the changes and  
+click <a class = "btn btn-info" href="/modalert"  role="button">Email Modification Alert</a>. Just like the initial intimation, this 
+email will include a summary and all currently uploaded files will be attached, along with your latest comments from the
+modification form.</p>
+
+
+<p>Deleting RFQs that are no longer required can help speed up database indexing and query responses times. 
+Clicking <a class = "btn btn-danger" href="/deleterfq"  role="button">Delete RFQ</a> will mark this record for deletion.
+ Reinsurers will be informed about the change and they can view it until the record is
+ permanently deleted <b>in 1 week</b>.</p>
+
+
+<p><a class = "btn btn-primary" href="/insdboard"  role="button">Back to Dashboard</a></p>
+
+<!-- Content ends -->
+
+	
+	 <br></br>	
+	<footer id="footer">	
+    <p>ndevi solutions 2015. Contact <a href ="mailto:support@ndevi.com">support@ndevi.com</a> </p>    
+    </footer>	
+	</div>
+</div>
+</body>
+</html>	
+
+	
+	

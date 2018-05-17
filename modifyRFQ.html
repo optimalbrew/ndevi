@@ -1,0 +1,100 @@
+{{/* Template to modify an existing RFQ*/}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ndevi</title>
+   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+<div class="container-fluid">
+<a href="http://www.ndevi.com/" style="text-decoration:none;"><h2>ndevi</h2></a>
+	  		
+	<div class="col-xs-12 col-md-12">
+<p>User <b>{{.InsEmpID}}</b> logged in. <a href="/signout">Logout</a></p>
+<div class="col-xs-12 col-md-10">
+<h4>Revise existing RFQ</h4>
+
+
+To cancel, go back or <a class = "btn btn-primary" href="/insdboard"  role="button">View Dashboard</a> 
+
+<p>RFQ ID: {{.RFQId}}, created on {{.RFQStrTime}}</p>
+
+<p>Enter information in <b>only those fields</b> where you wish to <b>replace</b> current information with new values.
+ Fields that are left blank will not be changed.</p>
+
+ <form action="/reviserfq" method = "post">
+ 	<div class="form-group">
+    <label for="client">Client Name: </label> <i>{{.ClientName}}</i>   
+    <input type="text" name = "client" class="form-control" id="client" placeholder="{{.ClientName}}">
+  	</div>
+  	
+  	<div class="form-group">
+    <label for="cat">Category: </label>  <i>{{.InsCat}}  </i>
+    <input type="text" name = "cat" class="form-control" id="cat" placeholder="{{.InsCat}}">
+  	</div>
+	
+	
+	<div class="form-group">
+			    <label> Current or new customer: </label> <i>{{.NewCust}}</i>
+  				<div class="input-group" >
+  				<label class="radio-inline"> 
+  				<input type="radio" name="RadioProd" id="inlineRadio1" value="Renewal"> Renewal
+				</label>
+				<label class="radio-inline"> 
+  				<input type="radio" name="RadioProd" id="inlineRadio2" value="New Quote"> New client
+				</label>
+  				</div>
+  	</div>	
+ 	
+ 	<div class="form-group">
+    <label for="RIType">Type of reinsurance: </label>    <i>{{.InsType}}</i>
+    <input type="text" name = "RItype" class="form-control" id="RItype" placeholder="{{.InsType}}">
+  	</div>
+  	<div class="form-group">
+    <label for="IV">Sum Insured (INR): </label>  <i>{{.InsVal}}</i>  
+    <input type="text" name = "sumIns" class="form-control" id="sumIns" placeholder="{{.InsVal}}">
+  	</div>
+  	
+  	<div class="form-group">
+    <label for="reten">Retention (INR): </label>  <i>{{.InsDed}}</i>  
+    <input type="text" name = "reten" class="form-control" id="reten" placeholder="{{.InsDed}}">
+  	</div> 	
+	
+		
+	<div class="form-group">
+    <label for="remarks">Remarks for recipients.</label> 
+    <p><i>{{.InsRemarks}}</i></p>
+    <p>If you enter anything below, it will <b>completely replace</b> the existing ones. Copy and paste the 
+    existing remarks to preserve them.</p> 	
+ 	<textarea class="form-control" name = "revised.remarks" rows="10" 
+ 	placeholder="Anything you write will erase existing remarks, copy and paste as required. Limit: about 250-300 words" 
+ 		maxlength = "1450" ></textarea>
+ 	</div>
+
+		
+	
+ <button type="submit" class="btn btn-primary">Modify</button>
+	
+
+ </form>
+ </div>
+
+ <br></br>
+
+    
+   
+	</div>
+	 <br></br>	
+	<footer id="footer">	
+    <p>ndevi solutions 2015. Contact <a href ="mailto:support@ndevi.com">support@ndevi.com</a> </p>    
+    </footer>	
+	
+</div>
+</body>
+</html>	

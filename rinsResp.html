@@ -1,0 +1,107 @@
+{{/* Reinsurer's view of RFQ with response form*/}}
+
+{{/* Uncomment everything (4-19) including the head and until second "div" before running the template	*/}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ndevi</title>
+   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+<div class="container-fluid">
+<a href="http://www.ndevi.com/" style="text-decoration:none;"><h2>ndevi</h2></a>
+	  		
+	<div class="col-xs-12 col-md-12">
+
+
+{{/* Uncomment everything above before running the template	*/}}
+<br>
+<a class = "btn btn-primary" href="/rinsdboard"  role="button">View Dashboard</a> 
+<br></br>
+<!-- left column-->
+<div class="col-xs-12 col-md-8">
+	<h4>Summary</h4> 
+	<p> Reference number: {{.RFQId}}. Last revised: {{.RFQStrTime}}</p>
+	<table class="table">
+  		<!--<tr>
+    		<td><b>Field</b></td>	<td><b>Input</b></td>  
+  		</tr> -->
+
+<tr><td><b>Insurer:</b></td><td> {{.Insurer}}</td></tr>
+<tr><td><b>Created by:</b></td><td> {{.InsEmpID}}</td></tr>
+
+<tr><td><b>Insurance Category:</b></td><td> {{.InsCat}}</td></tr>
+<tr><td><b>Insurance Type:</b></td><td> {{.InsType}}</td></tr>
+
+<tr><td><b>Client:</b></td><td> {{.ClientName}} </td></tr>
+<tr><td><b>New or existing customer:</b></td><td> {{.NewCust}}</td></tr>
+
+<tr><td><b>Insured Value (INR):</b></td><td> {{.InsVal}} </td></tr>
+<tr><td><b>Insured Deductible (INR):</b></td><td> {{.InsDed}}</td></tr>
+
+<tr>
+<td><b>Files uploaded:</b></td> <td><ul>
+{{/*Conditional on files */}}
+{{range .FileNames}}  <li> <a href="/serve/{{.}}">{{.}}</a> </li> {{else}} No files uploaded. {{end}}
+</ul></td>
+</tr>
+  	</table>
+<p><b>Remarks:</b></td><td>{{if .InsRemarks}} {{.InsRemarks}} {{else}} No remarks entered{{end}}</p>
+<!-- right column-->
+</div>
+<div class="col-xs-12 col-md-4">
+	<h4>Respond or revise previous response</h4>
+	<form action = "/rinsresp" method = "post">
+	<div class="form-group">
+    <label for="MaxCover">Maximum cover offerred</label>  (e.g. INR)    
+    <input type="text" name = "MaxCover" class="form-control" id="MaxCover" placeholder=" ">
+  	</div>
+  	<div class="form-group">
+    <label for="Excess">Subject to excess of</label>  (e.g. INR)    
+    <input type="text" name = "Excess" class="form-control" id="Excess" placeholder=" " >
+  	</div>
+  	
+  	<div class="form-group">
+    <label for="Prem">Premium to quote</label> (e.g. per 1000 INR) 
+    <input type="text" name = "Prem" class="form-control" id="Prem" placeholder=" " >
+  	</div> 	
+		
+	<div class="form-group">
+    <label for="Comm">Commission</label>  (if applicable)  
+    <input type="text" name = "Comm" class="form-control" id="Comm" placeholder=" " >
+  	</div> 		
+		
+	<div class="form-group">
+    <label for="remarks">Notes for insurer</label> 	
+ 	<textarea class="form-control" name = "remarks" rows="10" placeholder = "Will be shared with insurer"></textarea>
+ 	</div>
+	
+	<div class="form-group">
+    <label for="remarks">Notes to Self</label>
+    <p>This is for your <i>own future reference</i> and will not be shared with anyone</p> 	
+ 	<textarea class="form-control" name = "remarks" rows="10" placeholder = "Private: Will not be shared with anyone"></textarea>
+ 	</div>
+	
+	
+	</form>
+
+
+	 
+</div>
+
+
+	
+	 <br></br>	
+	
+	</div>
+	<footer id="footer">	
+    <p>ndevi solutions 2015. Contact <a href ="mailto:support@ndevi.com">support@ndevi.com</a> </p>    
+    </footer>	
+</div>
+</body>
+</html>	

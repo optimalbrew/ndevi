@@ -1,0 +1,95 @@
+{{/* Insurer view of RFQ just created, but not saved to db. */}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>ndevi</title>
+ <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+<div class="container-fluid">
+<a href="http://www.ndevi.com/" style="text-decoration:none;"><h2>ndevi</h2></a>
+	  		
+	<div class="col-xs-12 col-md-10">
+    
+<!-- Content start -->
+
+<p>User {{.InsEmpID}} logged in. <a href="/signout">Logout</a></p>
+
+<a class = "btn btn-primary" href="/insdboard"  role="button">Back to Dashboard</a> 
+
+<h4>Summary</h4> 
+<p>New RFQ created by {{.InsEmpID}} on {{.RFQStrTime}}. Reference number (RFQ ID): {{.RFQId}}</p> 
+
+<table class="table">
+  		<!--<tr>
+    		<td><b>Field</b></td>	<td><b>Input</b></td> 
+  		</tr>--> 
+
+<!--<tr><td><b>Insurer:</b></td><td> {{.Insurer}}</td>		</tr> 
+<tr><td><b>Created by:</b></td><td> {{.InsEmpID}}</td>	</tr>
+-->
+<tr><td><b>Insurance Category:</b></td><td> {{if .InsCat}}{{.InsCat}}{{else}} Not entered{{end}}</td>	</tr>
+<tr><td><b>Insurance Type:</b></td><td> {{if .InsType}}{{.InsType}}{{else}} Not entered{{end}}</td>	</tr>
+
+<tr><td><b>Client:</b></td><td> {{if .ClientName}}{{.ClientName}} {{else}} Not entered{{end}}</td>	</tr>
+<tr><td><b>New or existing customer:</b></td><td>{{if .NewCust}} {{.NewCust}} {{else}} Not mentioned{{end}}</td>	</tr>
+
+<tr><td><b>Insured Value (INR):</b></td><td>{{if .InsVal}} {{.InsVal}} {{else}} No values entered{{end}}</td></tr>
+<tr><td><b>Insured Deductible (INR):</b></td><td>{{if .InsDed}} {{.InsDed}} {{else}} No values entered{{end}}</td></tr>
+
+<tr>
+<td><b>Files uploaded:</b></td> <td><ul>
+{{/*Conditional on files */}}
+{{range .FileNames}}  <li> <a href="/serve/{{.}}">{{.}}</a> Click <a href="/deleteFileIns/{{.}}"> [Delete]</a> to remove.</li> {{else}} No files uploaded. {{end}}
+<li><a href="/handleroot">Add files</a> </li> </ul></td><td></td>	
+</tr>
+
+<tr>
+<td><b>RFQ invitation list:</b></td><td> 
+<form action="/addrins" method = "post">
+Select to <b>remove</b>. As this RFQ is not shared yet, none of these users
+can currently view it on their dashboards. Current list:
+{{range .ReInsList}}  
+<label class="checkbox-inline">
+  <input type="checkbox" name= "RInsDel[]" id="inlineCheckbox1" value="{{.}}"> <b>{{.}}</b>
+</label>
+{{else}} Recipient emails <b>not entered</b>. {{end}}
+<p>To add reinsurers enter email IDs separated by commas.</p>
+<div class= "form-group">
+<input type="text" name = "RIemails" class="form-control" id="list" placeholder="xyz@abcRE.com, abc@xyzRe.com,">
+</div> 	
+<button type="submit" class="btn btn-primary">Update List</button>
+</form>
+</td></tr>
+		 
+  	</table>
+<p><b>Remarks: </b></td><td>{{if .InsRemarks}} {{.InsRemarks}} {{else}} No remarks entered{{end}}</p>
+
+<h4>Further actions</h4>
+
+<p> Click <a class = "btn btn-success" href="/sharerfq"  role="button">Share with reinsurers</a> 
+to make the RFQ visible to reinsurers. 
+This also sends emails (Bcc:) with files attached to each reinsurer listed in the RFQ. 
+In these emails, your email ID appears in "To:" and "Reply To:" fields.
+Click <a class = "btn btn-info" href="/insdboard"  role="button">Save for later</a> to go back to dashboard.
+To revise this RFQ click <a class = "btn btn-warning" href="/modifyrfq"  role="button">Modify</a></p>
+
+<!-- Content ends -->
+
+	
+	 <br></br>	
+	<footer id="footer">	
+    <p>ndevi solutions 2015. Contact <a href ="mailto:support@ndevi.com">support@ndevi.com</a> </p>    
+    </footer>	
+	</div>
+</div>
+</body>
+</html>	
+
+	
+	
