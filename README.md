@@ -1,2 +1,2 @@
 # ndevi
-Code for GAE side project app.
+Code for GAE illustrative app.
